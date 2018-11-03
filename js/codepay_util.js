@@ -117,7 +117,6 @@ function isMobile() {
 }
 
 callback = function (data) {
-    if(!data)return;
     var status = parseInt(data.status);
     if (!isNaN(status) && status >= 0) {
         try {
@@ -150,10 +149,7 @@ show_Qrcode = function (data) {
         data.qrcode = user_data.qrcode_url + '?money=' + data.money + '&type=' + data["type"] + '&tag=' + data.tag;
     }
     if (data.qrcode)$("#show_qrcode").attr("src", data.qrcode); //二维码更新
-    if (data.money){
-        $("#money").html("￥"+data.money); //金额改变 云端匹配最佳金额
-        $("#copy").attr("data-clipboard-text",data.money); //金额改变
-    }
+    if (data.money) $("#money").html('￥' + data.money); //金额改变 云端匹配最佳金额
     var tps = data.money != data.price ? '<span style="color:red">为了您及时到账 请务必付款' + data.money + '元</span><br>' : '';
     if (data.message) { //创建后云端根据浏览器返回的tps提醒
         tps = data.message;
@@ -169,9 +165,6 @@ show_Qrcode = function (data) {
         tps += tps ? '' : '付款后自动到账 未到账可联系我们';
         // $("#msg h1").html('付款后自动到账 未到账可联系我们');
     }
-    if(data.kfqq){
-        $("#kf").html('客服QQ：'+data.kfqq+'<a target="_blank"  href="http://wpa.qq.com/msgrd?v=3&amp;uin='+data.kfqq+'&amp;site=qq&amp;menu=yes"><i class="fa fa-qq"></i></a>'); //客服QQ
-    }
     $("#msg h1").html(tps);
     show_desc(data);
 }
@@ -181,8 +174,7 @@ function getDescMode(key, value) {
 }
 show_desc = function (data) { //商品描述
     var html = '';
-    html += getDescMode('商品', user_data.subject||user_data.order_id||data.pay_id);
-    html += user_data.order_id?getDescMode('单号', user_data.order_id):'';
+    html += getDescMode('账号', data.pay_id);
     html += getDescMode('金额', "￥" + data.money);
     html += getDescMode('云端单号', data.order_id);
     html += getDescMode('创建时间', getNowFormatDate());
@@ -203,8 +195,7 @@ log = function (s) {
 
     }
 }
-
-var notifyServer;
+var notifyServer
 function startNotiry(data) {
     data.notiry_host = data.notiry_host || getApiHost(data);
     notifyServer = notify = io.connect(data.notiry_host);
@@ -218,10 +209,7 @@ function startNotiry(data) {
             o.qrcode = user_data.qrcode_url + '?money=' + o.money + '&type=' + o["type"] + '&tag=' + o.tag;
         }
         if (o.qrcode && $("#show_qrcode").src != o.qrcode)$("#show_qrcode").attr("src", o.qrcode); //二维码
-        if (o.money){
-            $("#money").html("￥"+o.money); //金额改变
-            $("#copy").attr("data-clipboard-text",o.money); //金额改变
-        }
+        if (o.money) $("#money").html('￥' + o.money); //金额改变
         if (o.msg)$("#msg h1").html(o.msg); //过期
         if (o.outTime) {
             try {
